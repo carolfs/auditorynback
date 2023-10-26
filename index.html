@@ -6,46 +6,40 @@
     </head>
     <body>
         <script type="">
-        function getaveragefrequency(blob) {
-            const audioContext = new AudioContext();
+        async function recordAndCalculateFrequency() {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        const audioChunks = [];
+
+        mediaRecorder.addEventListener("dataavailable", (event) => {
+            audioChunks.push(event.data);
+        });
+
+        mediaRecorder.addEventListener("stop", () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             const reader = new FileReader();
-            reader.readAsArrayBuffer(blob);
-            let averageFrequency;
+            reader.readAsArrayBuffer(audioBlob);
             reader.onload = function() {
-                audioContext.decodeAudioData(reader.result, function(buffer) {
+            const audioContext = new AudioContext();
+            audioContext.decodeAudioData(reader.result, function(buffer) {
                 const channelData = buffer.getChannelData(0);
                 let sum = 0;
                 for (let i = 0; i < channelData.length; i++) {
-                    sum += Math.abs(channelData[i]);
+                sum += Math.abs(channelData[i]);
                 }
-                averageFrequency = sum / channelData.length;
-                });
-            };
-            return averageFrequency;
-
-        }
-        async function recordAudio() {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(mediaStream);
-
-            var starttime = Date.now();
-
-            mediaRecorder.start();
-            console.log("Started recording");
-            mediaRecorder.addEventListener('dataavailable', event => {
-                const blob = new Blob([event.data], { type: 'audio/wav' });
-                console.log("Got a blob");
-                console.log(`Average frequency: ${getaveragefrequency(blob)}`);
-                // const audio = new Audio();
-                // audio.src = URL.createObjectURL(blob);
-                // audio.play();
+                const averageFrequency = sum / channelData.length;
+                console.log('Average frequency:', averageFrequency);
             });
-            setTimeout(() => {
-                mediaRecorder.stop();
-                console.log(`Stopped recording after ${Date.now() - starttime} ms`);
-            }, 2000);
+            };
+        });
+
+        mediaRecorder.start();
+
+        setTimeout(() => {
+            mediaRecorder.stop();
+        }, 2000);
         }
-        recordAudio();
+        recordAndCalculateFrequency();
         </script>
     </body>
 </html>
