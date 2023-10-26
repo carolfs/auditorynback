@@ -11,17 +11,20 @@
             const mediaRecorder = new MediaRecorder(mediaStream);
             var starttime = Date.now();
 
-            mediaRecorder.start(100);
+            mediaRecorder.start();
             console.log("Started recording");
             mediaRecorder.addEventListener('dataavailable', event => {
                 const blob = new Blob([event.data], { type: 'audio/wav' });
                 console.log("Got a blob");
                 console.log(`${blob}`);
-                if (Date.now() - starttime >= 1000) {
-                    mediaRecorder.stop();
-                    console.log(`Stopped recording after ${Date.now() - starttime} ms`);
-                }
+                const audio = new Audio();
+                audio.src = URL.createObjectURL(blob);
+                audio.play();
             });
+            setTimeout(() => {
+                mediaRecorder.stop();
+                console.log(`Stopped recording after ${Date.now() - starttime} ms`);
+            }, 2000);
         }
         recordAudio();
         </script>
