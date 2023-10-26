@@ -6,7 +6,7 @@
     </head>
     <body>
         <script type="">
-            const mediaStream = navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(mediaStream);
             var starttime = Date.now();
 
