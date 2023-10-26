@@ -12,21 +12,21 @@
             let averageFrequency;
 
             fileReader.onload = () => {
-            const audioData = fileReader.result;
-            audioContext.decodeAudioData(audioData, buffer => {
-                const audioBufferSourceNode = audioContext.createBufferSource();
-                audioBufferSourceNode.buffer = buffer;
-                const analyserNode = audioContext.createAnalyser();
-                analyserNode.fftSize = 2048;
-                const bufferLength = analyserNode.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                analyserNode.getByteFrequencyData(dataArray);
-                let sum = 0;
-                for (let i = 0; i < bufferLength; i++) {
-                    sum += dataArray[i];
-                }
-                averageFrequency = sum / bufferLength;
-            });
+                const audioData = fileReader.result;
+                audioContext.decodeAudioData(audioData, buffer => {
+                    const audioBufferSourceNode = audioContext.createBufferSource();
+                    audioBufferSourceNode.buffer = buffer;
+                    const analyserNode = audioContext.createAnalyser();
+                    analyserNode.fftSize = 2048;
+                    const bufferLength = analyserNode.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+                    analyserNode.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    averageFrequency = sum / bufferLength;
+                });
             };
             fileReader.readAsArrayBuffer(blob);
             return averageFrequency;
@@ -39,7 +39,7 @@
             mediaRecorder.start(100);
             console.log("Started recording");
             mediaRecorder.addEventListener('dataavailable', event => {
-                const blob = event.data;
+                const blob = new Blob([event.data], { type: 'audio/wav' });
                 console.log("Got a blob");
                 console.log(`Frequency ${getavgfrequency(blob)}`);
                 if (Date.now() - starttime >= 1000) {
