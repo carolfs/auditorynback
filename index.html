@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Hello World!</title>
+    </head>
+    <body>
+        <script type="">
+            const mediaStream = navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(mediaStream);
+            var starttime = Date.now();
+
+            mediaRecorder.start();
+            console.log("Started recording");
+            mediaRecorder.addEventListener('dataavailable', event => {
+                const blob = new Blob(event.data, { type: 'audio/wav' });
+                console.log("Got a blob");
+                if (Date.now() - starttime > 5000) {
+                    mediaRecorder.stop();
+                    console.log("Stopped recording");
+                }
+            });
+        </script>
+    </body>
+</html>
