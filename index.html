@@ -8,29 +8,19 @@
         <script type="">
         function getaveragefrequency(blob) {
             const audioContext = new AudioContext();
-            const fileReader = new FileReader();
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(blob);
             let averageFrequency;
-
-            fileReader.onload = () => {
-                const audioData = fileReader.result;
-                audioContext.decodeAudioData(audioData, buffer => {
-                const audioBufferSourceNode = audioContext.createBufferSource();
-                audioBufferSourceNode.buffer = buffer;
-                const analyserNode = audioContext.createAnalyser();
-                analyserNode.fftSize = 2048;
-                const bufferLength = analyserNode.frequencyBinCount;
-                const dataArray = new Float32Array(bufferLength);
-                analyserNode.getFloatFrequencyData(dataArray);
-                console.log(`${dataArray}`);
-                let sum = 0.0;
-                for (let i = 0; i < bufferLength; i++) {
-                    sum += dataArray[i];
+            reader.onload = function() {
+                audioContext.decodeAudioData(reader.result, function(buffer) {
+                const channelData = buffer.getChannelData(0);
+                let sum = 0;
+                for (let i = 0; i < channelData.length; i++) {
+                    sum += Math.abs(channelData[i]);
                 }
-                averageFrequency = sum / bufferLength;
+                averageFrequency = sum / channelData.length;
                 });
             };
-
-            fileReader.readAsArrayBuffer(blob);
             return averageFrequency;
 
         }
