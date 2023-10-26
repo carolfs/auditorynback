@@ -9,6 +9,7 @@
         function getaveragefrequency(blob) {
             const audioContext = new AudioContext();
             const fileReader = new FileReader();
+            let averageFrequency;
 
             fileReader.onload = () => {
                 const audioData = fileReader.result;
@@ -18,22 +19,26 @@
                 const analyserNode = audioContext.createAnalyser();
                 analyserNode.fftSize = 2048;
                 const bufferLength = analyserNode.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                analyserNode.getByteFrequencyData(dataArray);
-                let sum = 0;
+                const dataArray = new Float32Array(bufferLength);
+                analyserNode.getFloatFrequencyData(dataArray);
+                let sum = 0.0;
                 for (let i = 0; i < bufferLength; i++) {
                     sum += dataArray[i];
                 }
-                const averageFrequency = sum / bufferLength;
-                console.log(averageFrequency);
+                averageFrequency = sum / bufferLength;
                 });
             };
 
             fileReader.readAsArrayBuffer(blob);
+            return averageFrequency;
+
         }
         async function recordAudio() {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(mediaStream);
+            const audioCtx = new AudioContext();
+            const analyser = audioCtx.createAnalyser();
+            mediaRecorder.connect(analyser);
             var starttime = Date.now();
 
             mediaRecorder.start();
