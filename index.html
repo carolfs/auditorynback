@@ -14,11 +14,9 @@
             mediaRecorder.start(100);
             console.log("Started recording");
             mediaRecorder.addEventListener('dataavailable', event => {
-                if (Date.now() - starttime < 1000) {
-                    const blob = event.data;
-                    console.log("Got a blob");
-                }
-                else {
+                const blob = event.data;
+                console.log("Got a blob");
+                if (Date.now() - starttime >= 1000) {
                     mediaRecorder.stop();
                     console.log("Stopped recording");
                 }
