@@ -36,9 +36,7 @@
         async function recordAudio() {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(mediaStream);
-            const audioCtx = new AudioContext();
-            const analyser = audioCtx.createAnalyser();
-            mediaRecorder.connect(analyser);
+
             var starttime = Date.now();
 
             mediaRecorder.start();
