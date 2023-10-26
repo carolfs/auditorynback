@@ -6,6 +6,31 @@
     </head>
     <body>
         <script type="">
+        function getavgfrequency(blob) {
+            const audioContext = new AudioContext();
+            const fileReader = new FileReader();
+            let averageFrequency;
+
+            fileReader.onload = () => {
+            const audioData = fileReader.result;
+            audioContext.decodeAudioData(audioData, buffer => {
+                const audioBufferSourceNode = audioContext.createBufferSource();
+                audioBufferSourceNode.buffer = buffer;
+                const analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 2048;
+                const bufferLength = analyserNode.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyserNode.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                }
+                averageFrequency = sum / bufferLength;
+            });
+            };
+            fileReader.readAsArrayBuffer(blob);
+            return averageFrequency;
+        }
         async function recordAudio() {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(mediaStream);
@@ -16,6 +41,7 @@
             mediaRecorder.addEventListener('dataavailable', event => {
                 const blob = event.data;
                 console.log("Got a blob");
+                console.log(`Frequency ${getavgfrequency(blob)}`);
                 if (Date.now() - starttime >= 1000) {
                     mediaRecorder.stop();
                     console.log(`Stopped recording after ${Date.now() - starttime} ms`);
@@ -23,6 +49,9 @@
             });
         }
         recordAudio();
+
+
+fileReader.readAsArrayBuffer(blob);
         </script>
     </body>
 </html>
