@@ -35,8 +35,9 @@
 
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const frequency = await getfrequency(audioBlob);
-                    console.log(`As a function call: ${frequency}`);
+                    getfrequency(audioBlob).then(frequency => {
+                        console.log(`As a function call: ${frequency}`);
+                    });
                 });
 
                 mediaRecorder.start();
