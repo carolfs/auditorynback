@@ -21,6 +21,7 @@
                 const bufferLength = analyserNode.frequencyBinCount;
                 const dataArray = new Float32Array(bufferLength);
                 analyserNode.getFloatFrequencyData(dataArray);
+                console.log(`${dataArray}`);
                 let sum = 0.0;
                 for (let i = 0; i < bufferLength; i++) {
                     sum += dataArray[i];
