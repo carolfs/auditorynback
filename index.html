@@ -6,45 +6,46 @@
     </head>
     <body>
         <script type="">
-            function getfrequency(audioBlob) {
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(audioBlob);
-                reader.onload = function() {
-                const audioContext = new AudioContext();
-                let averageFrequency;
-                audioContext.decodeAudioData(reader.result, function(buffer) {
-                    const channelData = buffer.getChannelData(0);
-                    let sum = 0;
-                    for (let i = 0; i < channelData.length; i++) {
+            function getfrequency(blob) {
+                return new Promise((resolve, reject) => {
+                    const audioContext = new AudioContext();
+                    const reader = new FileReader();
+                    reader.readAsArrayBuffer(blob);
+                    reader.onload = function() {
+                    audioContext.decodeAudioData(reader.result, function(buffer) {
+                        const channelData = buffer.getChannelData(0);
+                        let sum = 0;
+                        for (let i = 0; i < channelData.length; i++) {
                         sum += Math.abs(channelData[i]);
-                    }
-                    averageFrequency = sum / channelData.length;
-                    console.log('Average frequency:', averageFrequency);
+                        }
+                        const averageFrequency = sum / channelData.length;
+                        resolve(averageFrequency);
+                    }, reject);
+                    };
                 });
-                };
-                return averageFrequency;
             }
-        async function recordAndCalculateFrequency() {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
-            const audioChunks = [];
+            async function recordAndCalculateFrequency() {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                const audioChunks = [];
 
-            mediaRecorder.addEventListener("dataavailable", (event) => {
-                audioChunks.push(event.data);
-            });
+                mediaRecorder.addEventListener("dataavailable", (event) => {
+                    audioChunks.push(event.data);
+                });
 
-            mediaRecorder.addEventListener("stop", () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                console.log(`As a function call: ${getfrequency(audioBlob)}`);
-            });
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const frequency = await getfrequency(audioBlob);
+                    console.log(`As a function call: ${frequency}`);
+                });
 
-            mediaRecorder.start();
+                mediaRecorder.start();
 
-            setTimeout(() => {
-                mediaRecorder.stop();
-            }, 2000);
-        }
-        recordAndCalculateFrequency();
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                }, 2000);
+            }
+            recordAndCalculateFrequency();
         </script>
     </body>
 </html>
