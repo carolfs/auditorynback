@@ -18,7 +18,7 @@
                 console.log("Got a blob");
                 if (Date.now() - starttime >= 1000) {
                     mediaRecorder.stop();
-                    console.log("Stopped recording");
+                    console.log(`Stopped recording after ${Date.now() - starttime}`);
                 }
             });
         }
