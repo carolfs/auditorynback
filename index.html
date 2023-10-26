@@ -6,6 +6,7 @@
     </head>
     <body>
         <script type="">
+        async function recordAudio() {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(mediaStream);
             var starttime = Date.now();
@@ -20,6 +21,8 @@
                     console.log("Stopped recording");
                 }
             });
+        }
+        recordAudio();
         </script>
     </body>
 </html>
