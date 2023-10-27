@@ -75,7 +75,7 @@ async function runtask() {
                 resolve(new Blob(audioChunks, { type: 'audio/wav' })));
         });
         mediaRecorder.start();
-        setTimeout(() => mediaRecorder.stop(), 2000)
+        setTimeout(() => mediaRecorder.stop(), 1500)
         const chunk = await chunkpromise;
         audioChunks.push(chunk);
         const audioBlob = await blobpromise;
