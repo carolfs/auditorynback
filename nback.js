@@ -6,12 +6,15 @@ function getfrequency(blob) {
         reader.onload = function() {
             audioContext.decodeAudioData(reader.result, function(buffer) {
                 const channelData = buffer.getChannelData(0);
-                let sum = 0;
+                let max = 0;
                 for (let i = 0; i < channelData.length; i++) {
-                    sum += Math.abs(channelData[i]);
+                    if (channelData[i] < 0) {
+                        console.log('Negative sound', channelData[i]);
+                    }
+                    let val = Math.abs(channelData[i]);
+                    if (val > max) max = val;
                 }
-                const averageFrequency = sum / channelData.length;
-                resolve(averageFrequency);
+                resolve(max);
             }, reject);
         };
     });
