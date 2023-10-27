@@ -2,51 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Hello World!</title>
+        <title>n-back task</title>
+        <script defer src="nback.js"></script>
     </head>
     <body>
-        <script type="">
-            function getfrequency(blob) {
-                return new Promise((resolve, reject) => {
-                    const audioContext = new AudioContext();
-                    const reader = new FileReader();
-                    reader.readAsArrayBuffer(blob);
-                    reader.onload = function() {
-                    audioContext.decodeAudioData(reader.result, function(buffer) {
-                        const channelData = buffer.getChannelData(0);
-                        let sum = 0;
-                        for (let i = 0; i < channelData.length; i++) {
-                        sum += Math.abs(channelData[i]);
-                        }
-                        const averageFrequency = sum / channelData.length;
-                        resolve(averageFrequency);
-                    }, reject);
-                    };
-                });
-            }
-            async function recordAndCalculateFrequency() {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const mediaRecorder = new MediaRecorder(stream);
-                const audioChunks = [];
-
-                mediaRecorder.addEventListener("dataavailable", (event) => {
-                    audioChunks.push(event.data);
-                });
-
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    getfrequency(audioBlob).then(frequency => {
-                        console.log(`As a function call: ${frequency}`);
-                    });
-                });
-
-                mediaRecorder.start();
-
-                setTimeout(() => {
-                    mediaRecorder.stop();
-                }, 2000);
-            }
-            recordAndCalculateFrequency();
-        </script>
+        <button onclick="runtask()" id="startbutton">Start</button>
     </body>
 </html>
