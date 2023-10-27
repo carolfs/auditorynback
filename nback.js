@@ -24,6 +24,7 @@ function getmagnitude(blob) {
 const letters = ['a', 'h', 'j', 'l', 'm', 'o', 'q', 'r', 's', 't', 'u', 'w', 'x', 'y', 'z'];
 
 var running = false;
+var threshold = 0.8;
 const n = 2;
 
 async function runtask() {
@@ -31,8 +32,10 @@ async function runtask() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const audio = new Audio();
     let prevletters = []; 
+    let match = false;
     function playletter() {
-        if (Math.random() < 0.25 && prevletters.length >= n) {
+        match = Math.random() < 0.25 && prevletters.length >= n;
+        if (match) {
             audio.src = `${prevletters[0]}.wav`;
             prevletters.push(prevletters[0]);
         }
@@ -78,6 +81,11 @@ async function runtask() {
         const audioBlob = await blobpromise;
         const magnitude = await getmagnitude(audioBlob);
         console.log(magnitude);
+        if (magnitude > threshold) {
+            audio.src = match ? 'match.wav' : 'falsealarm.wav';
+            audio.currentTime = 0;
+            audio.play();   
+        }
         await new Promise((resolve, _) => {
             setTimeout(resolve, 3000 - Date.now() + playtime);
         });
