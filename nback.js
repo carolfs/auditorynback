@@ -1,46 +1,24 @@
-function getfrequency(blob) {
+function getmagnitude(blob) {
     return new Promise((resolve, reject) => {
         const audioContext = new AudioContext();
         const reader = new FileReader();
         reader.readAsArrayBuffer(blob);
         reader.onload = function() {
-            audioContext.decodeAudioData(reader.result, function(buffer) {
-                const channelData = buffer.getChannelData(0);
-                let max = 0;
-                for (let i = 0; i < channelData.length; i++) {
-                    if (channelData[i] < 0) {
-                        console.log('Negative sound', channelData[i]);
+            audioContext.decodeAudioData(reader.result, function(audioBuffer) {
+                var maxAmplitude = 0;
+                for (var i = 0; i < audioBuffer.numberOfChannels; i++) {
+                  var channelData = audioBuffer.getChannelData(i);
+                  for (var j = 0; j < channelData.length; j++) {
+                    var amplitude = Math.abs(channelData[j]);
+                    if (amplitude > maxAmplitude) {
+                      maxAmplitude = amplitude;
                     }
-                    let val = Math.abs(channelData[i]);
-                    if (val > max) max = val;
+                  }
                 }
-                resolve(max);
+                resolve(maxAmplitude);
             }, reject);
         };
     });
-}
-
-async function recordAndCalculateFrequency() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-    const audioChunks = [];
-
-    mediaRecorder.addEventListener("dataavailable", (event) => {
-        audioChunks.push(event.data);
-    });
-
-    mediaRecorder.addEventListener("stop", () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        getfrequency(audioBlob).then(frequency => {
-            console.log(`As a function call: ${frequency}`);
-        });
-    });
-
-    mediaRecorder.start();
-
-    setTimeout(() => {
-        mediaRecorder.stop();
-    }, 1800);
 }
 
 const letters = ['a', 'h', 'j', 'l', 'm', 'o', 'q', 'r', 's', 't', 'u', 'w', 'x', 'y', 'z'];
@@ -98,8 +76,8 @@ async function runtask() {
         const chunk = await chunkpromise;
         audioChunks.push(chunk);
         const audioBlob = await blobpromise;
-        const frequency = await getfrequency(audioBlob);
-        console.log(frequency);
+        const magnitude = await getmagnitude(audioBlob);
+        console.log(magnitude);
         await new Promise((resolve, _) => {
             setTimeout(resolve, 3000 - Date.now() + playtime);
         });
