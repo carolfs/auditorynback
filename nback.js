@@ -81,19 +81,19 @@ async function runtask() {
         });
 
         // Record sound (2000 ms)
-        let audioChunks = [];
         const mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.start();
-        setTimeout(mediaRecorder.stop, 2000);
-        const chunk = await new Promise((resolve, _) => {
+        const audioChunks = [];
+        const chunkpromise = new Promise((resolve, _) => {
             mediaRecorder.addEventListener("dataavailable", (event) => resolve(event.data));
         });
-        audioChunks.push(chunk);
-
-        const audioBlob = await new Promise((resolve, _) => {
+        const blobpromise = new Promise((resolve, _) => {
             mediaRecorder.addEventListener("stop", () =>
                 resolve(new Blob(audioChunks, { type: 'audio/wav' })));
         });
+        mediaRecorder.start(2000);
+        const chunk = await chunkpromise;
+        audioChunks.push(chunk);
+        const audioBlob = await blobpromise;
         const frequency = await getfrequency(audioBlob);
         console.log(frequency);
         await new Promise((resolve, _) => {
