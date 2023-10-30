@@ -4,8 +4,33 @@
         <meta charset="UTF-8" />
         <title>n-back task</title>
         <script defer src="nback.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link href="styles.css" rel="stylesheet">
     </head>
     <body>
-        <button onclick="runtask()" id="startbutton">Start</button>
+        <h1>Auditory n-back task</h1>
+        <p>In this task, you will hear letters.  You can respond to any letter by saying any short word out loud, e.g., 'YES', right after you hear the letter. Your responses will be correct or incorrect depending on the task level. To play level 1 (1-back), you should only respond if you heard the same letter 1 letter ago, e.g., A - <strong>L</strong> - <strong>L</strong> - YES. To play level 2, (2-back), you should only respond if you heard the same letter 2 letters ago, e.g., A - <strong>L</strong> - W - <strong>L</strong> - YES. You can play at levels 1 (easy) to 4 (very hard).</p>
+        <p>If you responded correctly, you will hear a high-pitched sound, and if you responded incorrectly, you will hear a low-pitched sound. If you don't respond even though you heard the same letter N letters ago, this is counted as a 'miss'.</p>
+        <h2>Settings</h2>
+        <p><label>Level<br>
+            <input id="tasklevel" type="number" min="1" max="4" value="2" onchange="updatelevel()">
+        </label></p>
+        <p>Set your microphone threshold below so that only your responses are detected but not other noise such as typing sounds. If you set your threshold too low (to the left), any quiet noise might be detected as a response, but if you set your threshold too high (to the right), you will have to shout for your responses to be detected. You can test and adjust this by recording yourself below.</p>
+        <p><label>Microphone threshold<br>
+            <input id="threshold" type="range" min="0" max="100" value="90" onchange="updatethreshold()">
+        </label></p>
+        <p>Test the microphone by first recording yourself typing then recording yourself typing and responding:<br>
+            <button onclick="testrecord()" id="recordbutton">Record</button>
+            <span id="recordresults"></span>
+        </p>
+        <h2>Play the task!</h2>
+        <p><button onclick="runtask()" id="startbutton">Start</button>
+        <button onclick="stoptask()" id="stopbutton" disabled>Stop</button></p>
+        <h3>Score</h3>
+        <table>
+            <tr><td>Correct responses</td><td>0</td></tr>
+            <tr><td>Wrong responses</td><td>0</td></tr>
+            <tr><td>Misses</td><td>0</td></tr>
+        </table>
     </body>
 </html>
