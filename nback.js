@@ -85,6 +85,22 @@ async function testrecord() {
 
 async function runtask() {
     running = true;
+    const startbutton = document.getElementById("startbutton");
+    const stopbutton = document.getElementById("stopbutton");
+    const correctscore = document.getElementById("correct");
+    const wrongscore = document.getElementById("wrong");
+    const missesscore = document.getElementById("misses");
+    let correct = 0;
+    let wrong = 0;
+    let misses = 0;
+    correctscore.innerHTML = correct.toString();
+    wrongscore.innerHTML = wrong.toString();
+    missesscore.innerHTML = misses.toString();
+    startbutton.disabled = true;
+    stopbutton.onclick = function() {
+        running = false;
+    }
+    stopbutton.disabled = false;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const audio = new Audio();
     let prevletters = []; 
@@ -138,12 +154,29 @@ async function runtask() {
         const magnitude = await getmagnitude(audioBlob);
         console.log(magnitude);
         if (magnitude > threshold) {
-            audio.src = match ? 'match.wav' : 'falsealarm.wav';
+            if (match) {
+                audio.src = 'match.wav';
+                correct += 1;
+            }
+            else {
+                audio.src = 'falsealarm.wav';
+                wrong += 1
+            }
             audio.currentTime = 0;
             audio.play();   
         }
+        else {
+            if (match) {
+                misses += 1;
+            }
+        }
+        correctscore.innerHTML = correct.toString();
+        wrongscore.innerHTML = wrong.toString();
+        missesscore.innerHTML = misses.toString();
         await new Promise((resolve, _) => {
             setTimeout(resolve, 3000 - Date.now() + playtime);
         });
     }
+    startbutton.disabled = false;
+    stopbutton.disabled = true;
 }
