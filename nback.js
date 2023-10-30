@@ -72,7 +72,14 @@ async function testrecord() {
     audioChunks.push(chunk);
     const audioBlob = await blobpromise;
     const magnitude = await getmagnitude(audioBlob);
-    recordresults.innerHTML = (magnitude > threshold) ? "RESPONSE" : "NO RESPONSE";
+    if (magnitude > threshold) {
+        recordresults.style.color = "green";
+        recordresults.innerHTML = "RESPONSE";
+    }
+    else {
+        recordresults.style.color = "red";
+        recordresults.innerHTML = "NO RESPONSE";
+    }
     recordbutton.disabled = false;
 }
 
