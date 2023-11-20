@@ -119,7 +119,9 @@ function calcperformance(correct, wrong, misses, total) {
     if (total == 0) return 0.;
     let lowscore = (total - correct - misses)/total;
     let curscore = (total - wrong - misses)/total;
-    return (curscore - lowscore)/(1 - lowscore);
+    let performance = (curscore - lowscore)/(1 - lowscore);
+    if (isNaN(performance)) return 0.;
+    return performance;
 }
 
 async function runtask() {
