@@ -44,6 +44,7 @@ function init() {
         thresholdfield.value = 30;
     }
 }
+init();
 
 function getCookie(name) {
     let matches = document.cookie.match(new RegExp(
