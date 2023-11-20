@@ -215,6 +215,7 @@ async function runtask() {
                 misses += 1;
             }
         }
+        console.log(`Misses: ${misses}`);
         correctscore.innerHTML = correct.toString();
         wrongscore.innerHTML = wrong.toString();
         missesscore.innerHTML = misses.toString();
