@@ -44,7 +44,6 @@ function init() {
         thresholdfield.value = 30;
     }
 }
-init();
 
 function getCookie(name) {
     let matches = document.cookie.match(new RegExp(
@@ -82,6 +81,8 @@ function updatethreshold() {
     d.setTime(d.getTime() + (60*24*60*60*1000));
     document.cookie = `threshold=${threshold}; expires=${d.toUTCString()}`;
 }
+
+init();
 
 async function testrecord() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -126,6 +127,7 @@ function calcperformance(correct, wrong, misses, total) {
 
 async function runtask() {
     running = true;
+    console.log(`n = ${n}, threshold = ${threshold}`);
     const startbutton = document.getElementById("startbutton");
     const stopbutton = document.getElementById("stopbutton");
     const correctscore = document.getElementById("correct");
@@ -215,7 +217,6 @@ async function runtask() {
                 misses += 1;
             }
         }
-        console.log(`Misses: ${misses}`);
         correctscore.innerHTML = correct.toString();
         wrongscore.innerHTML = wrong.toString();
         missesscore.innerHTML = misses.toString();
