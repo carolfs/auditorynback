@@ -24,8 +24,33 @@ function getmagnitude(blob) {
 const letters = ['a', 'h', 'j', 'l', 'm', 'o', 'q', 'r', 's', 't', 'u', 'w', 'x', 'y', 'z'];
 
 var running = false;
-var threshold = 0.8;
-var n = 2;
+var threshold;
+var n;
+
+// Init threshold and level
+function init() {
+    const levelfield = document.getElementById("tasklevel");
+    const thresholdfield = document.getElementById("threshold");
+    if (getCookie("level") !== undefined) {
+        levelfield.value = getCookie("level");
+    }
+    else {
+        levelfield.value = 2;
+    }
+    if (getCookie("threshold") !== undefined) {
+        thresholdfield.value = getCookie("threshold") * 100;
+    }
+    else {
+        thresholdfield.value = 30;
+    }
+}
+
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
 
 function updatelevel() {
     const levelfield = document.getElementById("tasklevel");
@@ -37,18 +62,24 @@ function updatelevel() {
     else {
         n = newlevel;
     }
+    const d = new Date();
+    d.setTime(d.getTime() + (60*24*60*60*1000));
+    document.cookie = `level=${n}; expires=${d.toUTCString()}`;
 }
 
 function updatethreshold() {
     const thresholdfield = document.getElementById("threshold");
     const newthreshold = Number(thresholdfield.value);
     if (isNaN(newthreshold) || newthreshold < 0 || newthreshold > 100) {
-        thresholdfield.value = 80;
-        threshold = 0.8;
+        thresholdfield.value = 30;
+        threshold = 0.3;
     }
     else {
         threshold = 0.01*newthreshold;
     }
+    const d = new Date();
+    d.setTime(d.getTime() + (60*24*60*60*1000));
+    document.cookie = `threshold=${threshold}; expires=${d.toUTCString()}`;
 }
 
 async function testrecord() {
@@ -83,6 +114,12 @@ async function testrecord() {
     recordbutton.disabled = false;
 }
 
+function calcperformance(correct, wrong, misses, total) {
+    let lowscore = (total - correct - misses)/total;
+    let curscore = (total - wrong - misses)/total;
+    return (curscore - lowscore)/(1 - lowscore);
+}
+
 async function runtask() {
     running = true;
     const startbutton = document.getElementById("startbutton");
@@ -90,12 +127,15 @@ async function runtask() {
     const correctscore = document.getElementById("correct");
     const wrongscore = document.getElementById("wrong");
     const missesscore = document.getElementById("misses");
+    const performance = document.getElementById("performance");
     let correct = 0;
     let wrong = 0;
     let misses = 0;
+    let total = 0;
     correctscore.innerHTML = correct.toString();
     wrongscore.innerHTML = wrong.toString();
     missesscore.innerHTML = misses.toString();
+    performance.innerHTML = `${calcperformance(correct, wrong, misses, total)*100}%`;
     startbutton.disabled = true;
     stopbutton.onclick = function() {
         running = false;
@@ -153,6 +193,7 @@ async function runtask() {
         const audioBlob = await blobpromise;
         const magnitude = await getmagnitude(audioBlob);
         console.log(magnitude);
+        total += 1;
         if (magnitude > threshold) {
             if (match) {
                 audio.src = 'match.wav';
@@ -173,6 +214,7 @@ async function runtask() {
         correctscore.innerHTML = correct.toString();
         wrongscore.innerHTML = wrong.toString();
         missesscore.innerHTML = misses.toString();
+        performance.innerHTML = `${calcperformance(correct, wrong, misses, total)*100}%`;
         await new Promise((resolve, _) => {
             setTimeout(resolve, 3000 - Date.now() + playtime);
         });
