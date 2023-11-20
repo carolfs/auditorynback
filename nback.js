@@ -116,6 +116,7 @@ async function testrecord() {
 }
 
 function calcperformance(correct, wrong, misses, total) {
+    if (total == 0) return 0.;
     let lowscore = (total - correct - misses)/total;
     let curscore = (total - wrong - misses)/total;
     return (curscore - lowscore)/(1 - lowscore);
@@ -215,7 +216,7 @@ async function runtask() {
         correctscore.innerHTML = correct.toString();
         wrongscore.innerHTML = wrong.toString();
         missesscore.innerHTML = misses.toString();
-        performance.innerHTML = `${calcperformance(correct, wrong, misses, total)*100}%`;
+        performance.innerHTML = `${Math.round(calcperformance(correct, wrong, misses, total)*100)}%`;
         await new Promise((resolve, _) => {
             setTimeout(resolve, 3000 - Date.now() + playtime);
         });
