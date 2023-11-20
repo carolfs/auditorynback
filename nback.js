@@ -42,7 +42,7 @@ function init() {
         thresholdfield.value = getCookie("threshold") * 100;
     }
     else {
-        thresholdfield.value = 30;
+        thresholdfield.value = 50;
     }
     updatethreshold();
 }
@@ -73,8 +73,8 @@ function updatethreshold() {
     const thresholdfield = document.getElementById("threshold");
     const newthreshold = Number(thresholdfield.value);
     if (isNaN(newthreshold) || newthreshold < 0 || newthreshold > 100) {
-        thresholdfield.value = 30;
-        threshold = 0.3;
+        thresholdfield.value = 50;
+        threshold = 0.5;
     }
     else {
         threshold = 0.01*newthreshold;
