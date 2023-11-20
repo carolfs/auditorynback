@@ -37,12 +37,14 @@ function init() {
     else {
         levelfield.value = 2;
     }
+    updatelevel();
     if (getCookie("threshold") !== undefined) {
         thresholdfield.value = getCookie("threshold") * 100;
     }
     else {
         thresholdfield.value = 30;
     }
+    updatethreshold();
 }
 
 function getCookie(name) {
